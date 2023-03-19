@@ -2,7 +2,7 @@ import time
 from typing import List
 
 from urllib.parse import urljoin
-
+import urllib
 import pandas as pd
 from bs4 import BeautifulSoup
 import requests
@@ -28,9 +28,9 @@ def _get_sitemap_urls(robots_url: str) -> List[str]:
     return news_sitemaps
 
 
-def get_article_urls_from_web(url: str) -> List[dict]:
+def get_article_urls_from_web(website_url: str) -> List[dict]:
     # TODO: sanitize input, ensure the page base url was passed in
-    sitemap_urls = _get_sitemap_urls(urljoin(url, 'robots.txt'))
+    sitemap_urls = _get_sitemap_urls(urljoin(website_url, 'robots.txt'))
     article_urls = []
     while sitemap_urls:
         sitemap_url = sitemap_urls.pop()

@@ -34,7 +34,7 @@ class TextSummarizer:
         print(num_tokens)
 
         for i, chunk in enumerate(chunks):
-            prompt_request = "Sumarizuj tuto část článku: " + self.tokenizer.decode(chunk)
+            prompt_request = "Sumarizuj tuto část článku ČESKY: " + self.tokenizer.decode(chunk)
             messages = [{"role": "system", "content": "Budeš sumarizovat text."}]    
             messages.append({"role": "user", "content": prompt_request})
             response = openai.ChatCompletion.create(
@@ -49,7 +49,7 @@ class TextSummarizer:
             prompt_response.append(response["choices"][0]["message"]['content'].strip())
 
 
-        prompt_request = "Udělej sumarizaci následujících informací: " + str(prompt_response)
+        prompt_request = "Udělej sumarizaci následujících informací ČESKY: " + str(prompt_response)
         messages = [{"role": "system", "content": "Budeš sumarizovat text."}]
         messages.append({"role": "user", "content": prompt_request})
 
