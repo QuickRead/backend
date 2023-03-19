@@ -2,7 +2,7 @@ import time
 from typing import List
 
 from urllib.parse import urljoin
-import urllib
+
 import pandas as pd
 from bs4 import BeautifulSoup
 import requests
@@ -28,25 +28,18 @@ def _get_sitemap_urls(robots_url: str) -> List[str]:
     return news_sitemaps
 
 
-def get_article_urls_from_web(website_url: str) -> List[dict]:
-    # TODO: sanitize input, ensure the page base url was passed in
-    sitemap_urls = _get_sitemap_urls(urljoin(website_url, 'robots.txt'))
-    article_urls = []
-    while sitemap_urls:
-        sitemap_url = sitemap_urls.pop()
+def get_urls_from_sitemaps(website_url: str, sitemap_urls: List[str]):
+    for sitemap_url in sitemap_urls:
         sitemap_content = requests.get(sitemap_url).content
-        sitemap_xml = BeautifulSoup(sitemap_content, 'xml')
+        sitemap_content = BeautifulSoup(sitemap_content, 'xml')
 
-        if sitemap_xml.find('sitemapindex'):
-            sitemaps = sitemap_xml.findAll('sitemap')
-            logger.info(f'Found new {len(sitemaps)} sitemaps...')
-            for sitemap in sitemaps:
-                sitemap_urls.append(sitemap.find('loc').text)
-        elif sitemap_xml.find('urlset'):
-            urls = sitemap_xml.findAll('url')
-            logger.info(f'Processing {len(urls)} URLs...')
-
-            for url in urls:
+        if sitemap_content.find('sitemapindex'):
+            new_sitemap_urls = sitemap_content.findAll('sitemap')
+            new_sitemap_urls = [sm.find('loc').text for sm in new_sitemap_urls]
+            yield from get_urls_from_sitemaps(website_url, new_sitemap_urls)
+        elif sitemap_content.find('urlset'):
+            article_urls = sitemap_content.findAll('url')
+            for url in article_urls:
                 if not url.find('news:news'):
                     # Those are some old weird articles, fuck them :D
                     continue
@@ -62,14 +55,18 @@ def get_article_urls_from_web(website_url: str) -> List[dict]:
                 if age > HISTORY_LENGTH:
                     continue
 
-                article_urls.append({
+                yield {
                     'title': title,
                     'url': url,
                     'timestamp': int(pub_date.timestamp()),
                     'source': website_url
-                })
+                }
 
-    return article_urls
+
+def get_article_urls_from_web(website_url: str) -> List[dict]:
+    # TODO: sanitize input, ensure the page base url was passed in
+    sitemap_urls = _get_sitemap_urls(urljoin(website_url, 'robots.txt'))
+    return list(get_urls_from_sitemaps(website_url, sitemap_urls))
 
 
 def load_article_content(article_url: str) -> dict:
