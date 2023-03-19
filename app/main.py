@@ -22,6 +22,7 @@ def create_app():
             summary = summarizer.summarize(content)
             summaries[url] = summary
         summaries["meta_summary"] = summarizer.summarize('\n\n'.join(summaries.values()))
+
         return jsonify(summaries)
     
     @app.route('/api/list_articles', methods=['GET', 'POST'])
@@ -34,4 +35,5 @@ def create_app():
         for i, line in enumerate(lines):
             lines[i] = json.loads((line.replace('\\', '')))
         return lines
+
     return app
