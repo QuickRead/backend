@@ -1,1 +1,1 @@
-# backend
+Run `docker-compose up -d --build` in the main folder of the repository. If you want to monitor incoming requests and the app overall, use `docker-compose up --build`.
