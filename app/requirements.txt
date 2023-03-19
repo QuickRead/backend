@@ -5,3 +5,4 @@ transformers
 pandas
 beautifulsoup4
 trafilatura
+tqdm
