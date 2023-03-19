@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from ai import TextSummarizer
 from scraper import load_article_content, get_article_urls_from_web, RESULT_COUNT
 import pandas as pd
+import json
 
 def create_app():
     app = Flask(__name__)
@@ -29,6 +30,8 @@ def create_app():
         url = content["url"]
         df = pd.DataFrame(get_article_urls_from_web(url))
         df = df.sort_values('timestamp', ascending=False).head(RESULT_COUNT).reset_index(drop=True)
-        return df.to_json(orient='records', lines=True, force_ascii=False).splitlines()
-
+        lines =  df.to_json(orient='records', lines=True, force_ascii=False).splitlines()
+        for i, line in enumerate(lines):
+            lines[i] = json.loads((line.replace('\\', '')))
+        return lines
     return app
