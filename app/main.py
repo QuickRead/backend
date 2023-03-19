@@ -12,7 +12,7 @@ def create_app():
     def health_check():
         return "OK"
     
-    @app.route('/summarize', methods=['GET', 'POST'])
+    @app.route('/api/summarize', methods=['GET', 'POST'])
     def summarize():
         content = request.json
         urls = list(content["urls"])

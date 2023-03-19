@@ -5,7 +5,7 @@ articles = [
     'https://www.novinky.cz/clanek/zahranicni-evropa-na-kolotoci-v-nemeckem-munsteru-byl-ubodan-muz-40426240#dop_ab_variant=0&dop_source_zone_name=novinky.web.nexttoart&dop_req_id=zjQlRlKbNei-202303191706&dop_id=40426240'
 ]
 
-r = requests.post('http://localhost/summarize', json={
+r = requests.post('http://localhost/api/summarize', json={
     "urls": articles
 })
 
